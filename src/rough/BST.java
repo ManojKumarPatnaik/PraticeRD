@@ -113,6 +113,11 @@ public class BST {
         }
     }
 
+    public int heightOFBST(Node root){
+        if(root==null) return -1;
+        return 1+Math.max(heightOFBST(root.left),heightOFBST(root.right));
+    }
+
     public  List<Integer> dfsForPostOrder(){
         List<Integer> list = new ArrayList<>();
         class Traverse{
