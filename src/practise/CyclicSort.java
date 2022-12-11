@@ -35,6 +35,11 @@ public class CyclicSort {
 //        selection(A,A.length,0,0);
         quickSort(A, 0, A.length-1);
         System.out.println(Arrays.toString(A));
+        String baaccadh = skipApple("baacapplecadh");
+        System.out.println(baaccadh);
+        subsequence("","abcd");
+        System.out.println(subsequence1("","abcd"));
+        System.out.println(subsequence2("","abcd",new ArrayList()));
 
     }
 
@@ -76,6 +81,71 @@ public class CyclicSort {
             A[r - 1] = t;
             selection(A, r - 1, 0, 0);
         }
+    }
+
+    static void subsequence(String p,String up){
+        if(up.isBlank()) {
+            System.out.println(p);
+            return;
+        }
+        char c= up.charAt(0);
+        subsequence(p,up.substring(1));
+        subsequence(c+p,up.substring(1));
+    }
+
+    static ArrayList subsequence1(String p,String up){
+        if(up.isBlank()) {
+            System.out.println(p);
+            ArrayList l = new ArrayList();
+            l.add(p);
+            return l;
+        }
+        char c= up.charAt(0);
+        var le=subsequence1(p,up.substring(1));
+        var r=subsequence1(c+p,up.substring(1));
+        r.addAll(le);
+        return r;
+    }
+
+    static ArrayList subsequence2(String p,String up,ArrayList l){
+        if(up.isBlank()) {
+            l.add(p);
+            return l;
+        }
+        char c= up.charAt(0);
+        subsequence2(p,up.substring(1),l);
+        subsequence2(c+p,up.substring(1),l);
+        return l;
+    }
+
+    static String skip2(String up){
+        if(up.isBlank()) {
+            return "";
+        }
+        char c= up.charAt(0);
+        if(c=='a'){
+          return   skip2(up.substring(1));
+        }else  return  c+skip2(up.substring(1));
+    }
+
+    static String skipApple(String up){
+        if(up.isBlank()) {
+            return "";
+        }
+        if(up.startsWith("apple")){
+            return   skipApple(up.substring(5));
+        }else  return  up.charAt(0)+skipApple(up.substring(1));
+    }
+
+    static void skip(String p,String up){
+        if(up.isBlank()) {
+            System.out.println(p);
+            return;
+        }
+        char c= up.charAt(0);
+        if(c=='a'){
+            skip(p,up.substring(1));
+        }else skip(c+p,up.substring(1));
     }
 
     static int[] mergeSort(int A[]) {
