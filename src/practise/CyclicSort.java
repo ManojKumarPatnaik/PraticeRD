@@ -33,14 +33,48 @@ public class CyclicSort {
         triangle(4, 0);
         int A[] = {9, 8, 7, 5, 4, 2, 1};
 //        selection(A,A.length,0,0);
-        quickSort(A, 0, A.length-1);
-        System.out.println(Arrays.toString(A));
-        String baaccadh = skipApple("baacapplecadh");
-        System.out.println(baaccadh);
-        subsequence("","abcd");
-        System.out.println(subsequence1("","abcd"));
-        System.out.println(subsequence2("","abcd",new ArrayList()));
+//        quickSort(A, 0, A.length-1);
+//        System.out.println(Arrays.toString(A));
+//        String baaccadh = skipApple("baacapplecadh");
+//        System.out.println(baaccadh);
+//        subsequence("","abcd");
+//        System.out.println(subsequence1("","abcd"));
+//        System.out.println(subsequence2("","abcd",new ArrayList()));
+//        int Ans[]={1,2,2};
+//        var ans=subSetsDuplicate(Ans);
+//        ans.forEach(System.out::println);
+//        System.out.println();
+        ArrayList permutationRet = permutationRet("", "abc");
+        System.out.println(permutationRet);
+        System.out.println(phonePad("","12"));
+        System.out.println(dice("",4));
+        System.out.println(directions("",3,3));
+        boolean[][] B={
+                {true,true,true},{true,true,true},{true,true,true}
+        };
+        int path[][]=new int[B.length][B[0].length];
+        System.out.println(allPossiblePaths(B,"",0,0,path,1));
+        System.out.println(noOfWaysNQueens(new boolean[4][4],0));
+        System.out.println(isHappy(19));
 
+    }
+
+    static boolean isHappy(int n){
+        int slow=n;
+        int fast=n;
+        do{
+            slow=slove(slow);
+            fast=slove(slove(fast));
+        }while (slow!=fast);
+        return slow==1;
+    }
+    static int slove(int n){
+        int ans=0;
+        while(n>0){
+            int re=n%10;
+            ans+=re*re;
+            n/=10;
+        }return ans;
     }
 
     static void triangle(int r, int c) {
@@ -52,6 +86,176 @@ public class CyclicSort {
             System.out.println();
             triangle(r - 1, 0);
         }
+    }
+
+    static ArrayList directions(String p,int r, int c) {
+        if (r == 1 && c==1) {
+            var l= new ArrayList();
+            l.add(p);
+            return l;
+        }
+        var l= new ArrayList();
+        if (r > 1) {
+           l.addAll( directions(p+'D', r - 1, c));
+        } if(c>1) {
+           l.addAll(directions(p+'R', r, c - 1));
+        }
+        if(c>1 && c>1) {
+            l.addAll(directions(p+'d', r-1, c - 1));
+        }
+        return l;
+    }
+
+    static ArrayList directionsWithRestriction(boolean[][] B, String p,int r, int c) {
+        int row=B.length-1,clm=B[0].length-1;
+        if (r == row && c==clm) {
+            var l= new ArrayList();
+            l.add(p);
+            return l;
+        }
+        if(!B[r][c]) return new ArrayList<>();
+        var l= new ArrayList();
+        if (r <row) {
+            l.addAll( directionsWithRestriction(B,p+'D', r + 1, c));
+        } if(c<clm) {
+            l.addAll(directionsWithRestriction(B,p+'R', r, c +1));
+        }
+        return l;
+    }
+
+    static ArrayList directionsWithAll(boolean[][] B, String p,int r, int c) {
+        int row=B.length-1,clm=B[0].length-1;
+        if (r == row && c==clm) {
+            var l= new ArrayList();
+            l.add(p);
+            return l;
+        }
+        if(!B[r][c]) return new ArrayList<>();
+        B[r][c]=false;
+        var l= new ArrayList();
+        if (r <row) {
+            l.addAll( directionsWithAll(B,p+'D', r + 1, c));
+        } if(c<clm) {
+            l.addAll(directionsWithAll(B,p+'R', r, c +1));
+        }if(r>0){
+            l.addAll(directionsWithAll(B,p+'U',r-1,c));
+        }if(c>0){
+            l.addAll(directionsWithAll(B,p+'L',r,c-1));
+        }
+
+        B[r][c]=true;
+        return l;
+    }
+
+    static ArrayList allPossiblePaths(boolean[][] B, String p,int r, int c,int[][] path,int step) {
+        int row=B.length-1,clm=B[0].length-1;
+        if (r == row && c==clm) {
+            var l= new ArrayList();
+            l.add(p);
+           for(var v:path){
+               System.out.println(Arrays.toString(v));
+           }
+            System.out.println();
+            System.out.println(p);
+            return l;
+        }
+        if(!B[r][c]) return new ArrayList<>();
+        B[r][c]=false;
+        path[r][c]=step;
+        var l= new ArrayList();
+        if (r <row) {
+            l.addAll( allPossiblePaths(B,p+'D', r + 1, c,path,step+1));
+        } if(c<clm) {
+            l.addAll(allPossiblePaths(B,p+'R', r, c +1,path,step+1));
+        }if(r>0){
+            l.addAll(allPossiblePaths(B,p+'U',r-1,c,path,step+1));
+        }if(c>0){
+            l.addAll(allPossiblePaths(B,p+'L',r,c-1,path,step+1));
+        }
+
+        B[r][c]=true;
+        path[r][c]=0;
+        return l;
+    }
+
+    static int noOfWaysNQueens(boolean[][] Q,int row){
+        if(row==Q.length){
+            display(Q);
+            System.out.println();
+            return 1;
+        }int count=0;
+
+        for (int i = 0; i < Q.length; i++) {
+            if(isSafe(Q,row,i)){
+                Q[row][i]=true;
+                count+=noOfWaysNQueens(Q,row+1);
+                Q[row][i]=false;
+            }
+        }
+        return count;
+    }
+
+    private static boolean isSafe(boolean[][] q, int row, int i) {
+        //vertical order
+        for (int j = 0; j < row; j++) {
+            if(q[j][i])return false;
+        }
+        //diagonal order
+        int maxLeft=Math.min(row,i);
+        for (int j = 1; j <= maxLeft; j++) {
+            if(q[row-j][i-j]) return false;
+        }
+        //diagonal order
+        int maxRight=Math.min(row,q.length-1-i);
+        for (int j = 1; j <= maxRight; j++) {
+            if(q[row-j][i+j]) return false;
+        }
+        return true;
+    }
+
+    private static void display(boolean[][] q) {
+        for(var v:q){
+            for(var i:v){
+                if(i)
+                System.out.print("Q");
+                else System.out.print("X");
+            }
+            System.out.println();
+        }
+    }
+
+    static List<List<Integer>> subSets(int A[]){
+        var outerList = new ArrayList<List<Integer>>();
+        outerList.add(new ArrayList<>());
+        for(var v:A){
+            int n=outerList.size();
+            for (int i = 0; i < n; i++) {
+                var internal = new ArrayList<>(outerList.get(i));
+                internal.add(v);
+                outerList.add(internal);
+            }
+        }
+        return outerList;
+    }
+
+    static List<List<Integer>> subSetsDuplicate(int A[]){
+        var outerList = new ArrayList<List<Integer>>();
+        outerList.add(new ArrayList<>());
+        int start=0;
+        int end=0;
+        for (int i = 0; i < A.length; i++) {
+            if(i>0 && A[i]==A[i-1]){
+                start=1+end;
+            }
+        end=outerList.size()-1;
+            int n=outerList.size();
+            for (int j = start; j < n; j++) {
+                var internal = new ArrayList<>(outerList.get(j));
+                internal.add(A[i]);
+                outerList.add(internal);
+            }
+        }
+        return outerList;
     }
 
     static void bubble(int A[], int r, int c) {
@@ -91,6 +295,70 @@ public class CyclicSort {
         char c= up.charAt(0);
         subsequence(p,up.substring(1));
         subsequence(c+p,up.substring(1));
+    }
+    static void permutations(String p,String up){
+        if(up.isEmpty()) {
+            System.out.println(p);
+            return;
+        }
+        char c= up.charAt(0);
+        for (int i = 0; i <= p.length(); i++) {
+            String s = p.substring(0,i);
+            String t = p.substring(i);
+            permutations(s+c+t,up.substring(1));
+        }
+    }
+
+    static ArrayList permutationRet(String p,String up){
+        if(up.isEmpty()) {
+            var in=new ArrayList();
+            in.add(p);
+            return in;
+        }
+        char c= up.charAt(0);
+        var out= new ArrayList();
+        for (int i = 0; i <= p.length(); i++) {
+            String s = p.substring(0,i);
+            String t = p.substring(i);
+            out.addAll(permutationRet(s+c+t,up.substring(1)));
+        }return out;
+    }
+
+
+    static ArrayList phonePad(String p,String up){
+        if(up.isEmpty()) {
+            var in=new ArrayList();
+            in.add(p);
+            return in;
+        }
+        int digit = up.charAt(0)-'0';
+        var out= new ArrayList();
+        for (int i = (digit-1)*3; i < digit*3; i++) {
+            char c= (char)('a'+i);
+            out.addAll(phonePad(p+c,up.substring(1)));
+        }return out;
+    }
+
+    static ArrayList dice(String p,int t){
+        if(t==0) {
+            var in=new ArrayList();
+            in.add(p);
+            return in;
+        }
+        var out= new ArrayList();
+        for (int i = 1; i <=6 && i<=t; i++) {
+            out.addAll(dice(p+i,t-i));
+        }return out;
+    }
+
+
+    static int mazeCountNoOfWays(int r,int c){
+        if(r==1||c==1) {
+            return 1;
+        }
+        var out= mazeCountNoOfWays(r-1,c);
+        var in= mazeCountNoOfWays(r,c-1);
+        return out+in;
     }
 
     static ArrayList subsequence1(String p,String up){
